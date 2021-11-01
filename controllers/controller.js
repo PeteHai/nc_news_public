@@ -5,6 +5,7 @@ exports.getAllTopics = (req,res,next)=>{
         res.status(200).send({topics})
     })
     .catch((err)=>{
-        next(err)
+        console.log(err)
+        next(err) // changed this and now failing first test?
     })
 }
