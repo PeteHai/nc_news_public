@@ -7,7 +7,7 @@ module.exports = [
     created_at: new Date(1594329060000),
     votes: 100
   },
-  {
+  { 
     title: 'Sony Vaio; or, The Laptop',
     topic: 'mitch',
     author: 'icellusedkars',
