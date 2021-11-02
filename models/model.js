@@ -9,3 +9,12 @@ exports.selectTopics = () =>{
     })
 
 }
+
+exports.selectArticleID = (id) =>{
+    console.log(id,"in the model")
+    return db.query('SELECT * FROM articles WHERE article_id = $1;',[id])
+    .then (({rows})=>{
+        console.log(rows," rows from model")
+        return rows[0]
+    })
+}

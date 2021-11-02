@@ -38,3 +38,24 @@ describe("/api/topics", () => {
     });
   });
 });
+describe('/api/articles/:article_id',()=>{
+    describe('GET',()=>{
+        test('status:200 and returns article data for relevant id',()=>{
+            return request(app)
+            .get('/api/articles/2')
+            .expect(200)
+            .then(({body})=>{
+               expect(body.msg).toEqual(
+                   expect.objectContaining({
+                       article_id: expect.any(Number),
+                       title: expect.any(String),
+                       body: expect.any(String),
+                       votes:expect.any(Number),
+                       topic: expect.any(String),
+                       created_at: expect.any(),
+                   })
+               )
+            })
+        })
+    })
+})
