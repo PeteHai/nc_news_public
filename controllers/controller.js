@@ -12,8 +12,7 @@ exports.getAllTopics = (req,res,next)=>{
 exports.getArticleID = (req,res,next)=>{
     selectArticleID(req.params.article_id)
     .then((rows)=>{
-        console.log(rows, "rows from controller")
-        res.status(200).send({rows})
+        res.status(200).send(rows)
     })
     .catch((err)=>{
         next(err)

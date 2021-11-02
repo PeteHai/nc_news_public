@@ -38,24 +38,71 @@ describe("/api/topics", () => {
     });
   });
 });
-describe('/api/articles/:article_id',()=>{
-    describe('GET',()=>{
-        test('status:200 and returns article data for relevant id',()=>{
-            return request(app)
-            .get('/api/articles/2')
-            .expect(200)
-            .then(({body})=>{
-               expect(body.msg).toEqual(
-                   expect.objectContaining({
-                       article_id: expect.any(Number),
-                       title: expect.any(String),
-                       body: expect.any(String),
-                       votes:expect.any(Number),
-                       topic: expect.any(String),
-                       created_at: expect.any(),
-                   })
-               )
+describe("/api/articles/:article_id", () => {
+  describe("GET", () => {
+    test("status:200 and returns article data for relevant id", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              body: expect.any(String),
+              votes: expect.any(Number),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              comment_count: expect.any(Number) //need to query this in model
             })
-        })
-    })
-})
+          );
+        });
+    });
+  });
+  describe("sad path article_id not found", () => {
+    test("status:404, returns an error when using an invalid path", () => {
+        const idOfArticle = 9999
+      return request(app)
+        .get(`/api/articles/${idOfArticle}`)
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toEqual("Article not found");
+        });
+    });
+  });
+  describe("sad path invalid article_id request", () => {
+    test("status:404, returns an error when using an invalid path", () => {
+        const idOfArticle = "bad_id"
+      return request(app)
+        .get(`/api/articles/${idOfArticle}`)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toEqual("Invalid query");
+        });
+    });
+  });
+
+//   describe('/api/articles/:article_id',()=>{
+//       describe('PATCH',()=>{
+//           test("status:201 and responds with the updated article object",()=>{
+//             const idOfArticle = 2
+//             const newVote = 10
+//               return request(app)
+//               .patch(`/api/articles/${idOfArticle}`)
+//               .send({inc_votes:newVote})
+//               .expect(201)
+//               .then(({body})=>{
+//                   expect(body.msg).toBe({
+//                     article_id: idOfArticle,
+//                     title: expect.any(String),
+//                     body: expect.any(String),
+//                     votes: expect.any(Number),
+//                     topic: expect.any(String),
+//                     created_at: expect.any(String),
+//                   })
+//               })
+//           })
+//       })
+//   })
+});
