@@ -1,0 +1,6 @@
+You are now connected to database "nc_news_test" as user "peter".
+ article_id |                title                |               body                | votes | topic |    author     |     created_at      | comment_count 
+------------+-------------------------------------+-----------------------------------+-------+-------+---------------+---------------------+---------------
+          1 | Living in the shadow of a great man | I find this existence challenging |   110 | mitch | butter_bridge | 2020-07-09 21:11:00 |            11
+(1 row)
+

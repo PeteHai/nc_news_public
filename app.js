@@ -12,10 +12,12 @@ const {handleCustomErrors,handlePsqlErrors,handle500Errors} = require("./control
 //endpoints - could put these into a router?
 app.get("/api/topics",getAllTopics);
 app.get('/api/articles/:article_id',getArticleID);
-// app.patch('/api/articles/:article_id', patchArticle)
+app.patch('/api/articles/:article_id', patchArticle)
+
+//requests not allowed 405 handling
+app.delete(()=>{res.status(405).send({msg: "method not allowed"})})
 
 //error handling middleware
-
 app.all("*", (req, res) => {
     res.status(404).send({ msg: "Invalid path" });
   });
