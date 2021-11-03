@@ -8,13 +8,13 @@ exports.selectTopics = () => {
   });
 };
 exports.selectArticleID = (article_id) => {
-
-  
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", 
-    [article_id])
+    .query(
+      "SELECT *, COUNT(comments_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = article.article_id GROUP BY article.article_id WHERE article_id = $1;",
+      [article_id]
+    )
     .then(({ rows }) => {
-        console.log(rows)
+      console.log(rows);
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
       } else {
