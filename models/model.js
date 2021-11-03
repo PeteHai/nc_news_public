@@ -10,7 +10,12 @@ exports.selectTopics = () => {
 exports.selectArticleID = (article_id) => {
   return db
     .query(
-      "SELECT *, COUNT(comments_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = article.article_id GROUP BY article.article_id WHERE article_id = $1;",
+      `SELECT articles.*, COUNT(comment_id) AS comment_count
+      FROM articles 
+      LEFT JOIN comments 
+      ON comments.article_id = articles.article_id  
+      WHERE articles.article_id = $1 
+      GROUP BY articles.article_id;`,
       [article_id]
     )
     .then(({ rows }) => {

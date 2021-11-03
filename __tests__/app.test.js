@@ -54,7 +54,7 @@ describe("/api/articles/:article_id", () => {
               topic: expect.any(String),
               author: expect.any(String),
               created_at: expect.any(String),
-              comment_count: expect.any(Number) //need to query this in model
+              comment_count: expect.any(String) //need to query this in model
             })
           );
         });
