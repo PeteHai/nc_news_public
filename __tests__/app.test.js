@@ -124,7 +124,7 @@ describe("/api/articles/:article_id", () => {
             expect(body.msg).toEqual("Invalid query");
           });
       });
-      test("status:400, SQL query is wrong", () => {
+      test("status:400, SQL query is invalid", () => {
         return request(app)
           .patch(`/api/articles/1`)
           .send({ inc_votes: "bad_request" })
@@ -133,6 +133,31 @@ describe("/api/articles/:article_id", () => {
             expect(body.msg).toEqual("Invalid query");
           });
       });
+    });
+  });
+});
+
+describe.only("/api/articles", () => {
+  describe("GET", () => {
+    test("status 200 and responds with an array of article objects with the relevant properties", () => {
+      return request(app)
+      .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+          console.log(body)
+          body.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+              article_id: expect.any(Number), 
+              title: expect.any(String),
+              body: expect.any(String),
+              votes: expect.any(Number), 
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+            })
+          )});
+        });
     });
   });
 });

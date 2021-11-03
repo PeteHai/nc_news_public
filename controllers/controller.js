@@ -2,8 +2,8 @@ const {
   selectTopics,
   selectArticleID,
   patchArticleVotes,
+  fetchAllArticles,
 } = require("../models/model.js");
-
 
 exports.getAllTopics = (req, res, next) => {
   selectTopics()
@@ -28,7 +28,17 @@ exports.getArticleID = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   patchArticleVotes(req.body, req.params.article_id) //{ inc_votes: 10 }
     .then((patchedArticle) => {
-      res.status(200).send({patchedArticle});
+      res.status(200).send({ patchedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getAllArticles = (req, res, next) => {
+  fetchAllArticles()
+    .then((articlesArray) => {
+      res.status(200).send(articlesArray);
     })
     .catch((err) => {
       next(err);

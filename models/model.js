@@ -34,13 +34,32 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
       SET votes = votes + $1
       WHERE article_id = $2
       RETURNING articles.*;`,
-      [inc_votes, article_id] 
+      [inc_votes, article_id]
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
       }
-        return rows[0];
-
+      return rows[0];
     });
 };
+
+exports.fetchAllArticles = () => {
+  //query to get all article_id in an array
+  //iterate through array, for each article_id do a query to get all the article info
+
+
+
+ return db.query(
+    `SELECT articles.*, COUNT(comment_id) AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+    ON comments.article_id = articles.article_id
+    GROUP BY articles.article_id;`
+  )
+  .then(({rows})=>{
+    //console.log(rows)
+    return rows
+  })
+}
+
