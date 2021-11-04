@@ -48,18 +48,18 @@ exports.fetchAllArticles = () => {
   //query to get all article_id in an array
   //iterate through array, for each article_id do a query to get all the article info
 
-
-
- return db.query(
-    `SELECT articles.*, COUNT(comment_id) AS comment_count
+  return db
+    .query(
+      `SELECT articles.*, COUNT(comment_id) AS comment_count
     FROM articles 
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
     GROUP BY articles.article_id;`
-  )
-  .then(({rows})=>{
-    //console.log(rows)
-    return rows
-  })
-}
+    )
+    .then(({ rows }) => {
+      //console.log(rows)
+      return rows;
+    });
+};
 
+//add into query ORDER BY ${sort_by} etc see mitch-treasures
