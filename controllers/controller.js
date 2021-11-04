@@ -1,8 +1,10 @@
+const topics = require("../db/data/test-data/topics.js");
 const {
   selectTopics,
   selectArticleID,
   patchArticleVotes,
   fetchAllArticles,
+  fetchArticleByTopic,
 } = require("../models/model.js");
 
 exports.getAllTopics = (req, res, next) => {
@@ -36,11 +38,22 @@ exports.patchArticle = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  fetchAllArticles()
-    .then((articlesArray) => {
-      res.status(200).send(articlesArray);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  const { sortOrder, sortProperty, topic } = req.query;
+  if (!!topic) {
+    fetchArticleByTopic(topic)
+      .then((articles) => {
+        res.status(200).send({ articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    fetchAllArticles(sortOrder, sortProperty, topic)
+      .then((articlesArray) => {
+        res.status(200).send(articlesArray);
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };

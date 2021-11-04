@@ -141,25 +141,80 @@ describe.only("/api/articles", () => {
   describe("GET", () => {
     test("status 200 and responds with an array of article objects with the relevant properties", () => {
       return request(app)
-      .get('/api/articles')
+        .get("/api/articles")
         .expect(200)
-        .then(({body}) => {
-          console.log(body)
+        .then(({ body }) => {
           body.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
-              article_id: expect.any(Number), 
-              title: expect.any(String),
-              body: expect.any(String),
-              votes: expect.any(Number), 
-              topic: expect.any(String),
-              author: expect.any(String),
-              created_at: expect.any(String),
-            })
-          )});
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                body: expect.any(String),
+                votes: expect.any(Number),
+                topic: expect.any(String),
+                author: expect.any(String),
+                created_at: expect.any(String),
+              })
+            );
+          });
         });
     });
+
+    test("status:200, articles are sorted by newest first by default", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("created_at", { ascending: false });
+        });
+    });
+    test("status:200, articles sort order can be defined by user query e.g. older first", () => {
+      return request(app)
+        .get("/api/articles?sortOrder=desc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("status:200, user can define which property to sort by e.g. least votes", () => {
+      return request(app)
+        .get("/api/articles?sortProperty=votes")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("votes", {
+            ascending: true,
+          });
+        });
+    });
+    test("status:200, user can define which property to sort by e.g. author A-Z ACS", () => {
+      return request(app)
+        .get("/api/articles?sortProperty=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("author", {
+            ascending: true,
+          });
+        });
+    });
+    test("status:200, user can define property and order to sort e.g. most votes first (votes DESC", () => {
+      return request(app)
+        .get("/api/articles?sortProperty=votes&sortOrder=desc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("votes", {
+            descending: true,
+          });
+        });
+    });
+    test("status:200, user can get properties by topic", () =>{
+      return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+          const {articles} = body;
+          const intended = articles.every(article=>article.topic === 'cats')
+          expect(intended).toEqual(true)
+          });
+        });
   });
 });
-
-//test for sort_by, order and topic

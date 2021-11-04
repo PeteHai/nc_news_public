@@ -44,22 +44,53 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
     });
 };
 
-exports.fetchAllArticles = () => {
-  //query to get all article_id in an array
-  //iterate through array, for each article_id do a query to get all the article info
+exports.fetchAllArticles = (
+  sortOrder = "ASC",
+  sortProperty = "created_at",
+  topic = ""
+) => {
+  //input validation
+  const orderWhitelist = ["asc", "desc"];
+  const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
 
-  return db
-    .query(
-      `SELECT articles.*, COUNT(comment_id) AS comment_count
-    FROM articles 
+  if (!orderWhitelist.includes(sortOrder.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid Input" });
+  }
+  if (!propertyWhitelist.includes(sortProperty.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid Input" });
+  }
+
+  //query construction
+  const queryStr = `SELECT articles.*, COUNT(comment_id) AS comment_count
+    FROM articles
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id;`
-    )
-    .then(({ rows }) => {
-      //console.log(rows)
-      return rows;
-    });
+    GROUP BY articles.article_id
+    ORDER BY ${sortProperty} ${sortOrder};`;
+
+  return db.query(queryStr).then(({ rows }) => {
+    return rows;
+  });
 };
 
-//add into query ORDER BY ${sort_by} etc see mitch-treasures
+exports.fetchArticleByTopic = (
+  sortOrder = "ASC",
+  sortProperty = "created_at",
+  topic
+) => {
+  // console.log(sortProperty, sortOrder, topic);
+  const queryStr = `SELECT articles.*, 
+  COUNT(comment_id) AS comment_count 
+  FROM articles 
+  LEFT JOIN comments ON comments.article_id = articles.article_id 
+  WHERE articles.topic LIKE 'cats' 
+  GROUP BY articles.article_id 
+  ORDER BY created_at ASC;`;
+
+  return db.query(queryStr)
+  .then(({ rows }) => {
+    return rows;
+  });
+};
+
+// SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.topic LIKE 'cats' GROUP BY articles.article_id ORDER BY created_at ASC;
