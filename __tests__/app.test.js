@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data/index.js");
 const { seed } = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app.js");
+const { post } = require("../app.js");
 process.env.NODE_ENV = "test";
 
 beforeEach(() => seed(testData));
@@ -289,4 +290,28 @@ describe("/api/articles/:article_id/comments", () => {
     });
 
   })
+  describe.only('POST /api/articles/:article_id/comments',()=>{
+    test('Status 201 and responds with the newly created comment',()=>{
+      const input ={
+        username: "bob",
+        body:"dogs are better than cats"
+      }
+      return request(app)
+      .post("/api/articles/1/comments")
+      .send(input)
+      .expect(201)
+      .then(({body})=>{
+        expect(body[0].toEqual({
+          comment_id: expect.any(Number),
+          ...input
+        }))
+      })
+    })
+  })
 });
+
+// describe('/api/comments/:comment_id',()=>{
+//   describe('DELETE',()=>{
+//     test('')
+//   })
+// })

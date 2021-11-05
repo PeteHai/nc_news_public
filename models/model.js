@@ -102,3 +102,16 @@ exports.fetchCommentsForArticle = (article_id) => {
     return rows;
   });
 };
+
+exports.insertComment = (article_id, commentBody, commentUsername) =>{
+  const queryStr = `
+  INSERT INTO comments (body, votes, author, article_id, created_at)
+  VALUES($1,$2,$3,$4, CURRENT_TIMESTAMP)`
+
+  return db.query(queryStr, [commentBody, 0, commentUsername, article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Article not found" });
+    }
+    return rows;
+  });
+}

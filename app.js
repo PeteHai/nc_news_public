@@ -9,6 +9,7 @@ const {
   patchArticle,
   getAllArticles,
   getArticleComments,
+  postCommentOnArticle,
 } = require("./controllers/controller.js");
 
 //error handling controllers
@@ -24,6 +25,7 @@ app.get("/api/articles/:article_id", getArticleID);
 app.patch("/api/articles/:article_id", patchArticle);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments)
+app.post("/api/articles/:article_id/comments", postCommentOnArticle)
 
 //requests not allowed 405 handling
 app.delete(() => {
