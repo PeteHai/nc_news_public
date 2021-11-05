@@ -78,13 +78,13 @@ exports.fetchArticleByTopic = (
   COUNT(comment_id) AS comment_count 
   FROM articles 
   LEFT JOIN comments ON comments.article_id = articles.article_id 
-  WHERE articles.topic LIKE $1 
+  WHERE articles.topic LIKE '$1' 
   GROUP BY articles.article_id 
   ORDER BY ${sortProperty} ${sortOrder};`;
 
-  return db.query(queryStr, [topic]).then(({ rows }) => {
-    return rows.length > 0
-      ? rows
-      : Promise.reject({ status: 404, msg: "Topic not found" });
-  });
+  return db
+    .query(queryStr, [topic, sortProperty, sortOrder])
+    .then(({ rows }) => {
+      return  rows.length > 0 ? rows : Promise.reject({ status: 404, msg: "Topic not found" });
+    });
 };

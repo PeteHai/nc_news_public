@@ -206,22 +206,24 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("status:200, user can get properties by topic", () =>{
+    test("status:200, user can get properties by topic", () => {
       return request(app)
-      .get("/api/articles?topic=cats")
-      .expect(200)
-      .then(({ body }) => {
-          const {articles} = body;
-          const intended = articles.every(article=>article.topic === 'cats')
-          expect(intended).toEqual(true)
-          });
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          const intended = articles.every(
+            (article) => article.topic === "cats"
+          );
+          expect(intended).toEqual(true);
         });
+    });
   });
-  describe('sad path /api/articles',()=>{
+  describe("sad path /api/articles", () => {
     //1 - invalid url
     //2 - invalid psql query
     //valid psql query but no topics of that title
-  })
+  });
   test("status:404, not a valid topic", () => {
     return request(app)
       .get(`/api/articles?topic=notAtopic`)
@@ -229,7 +231,6 @@ describe("/api/articles", () => {
       .then(({ body }) => {
         expect(body.msg).toEqual("Topic not found");
       });
-      
   });
   test("status:400,  Invalid sort order", () => {
     return request(app)
@@ -238,7 +239,7 @@ describe("/api/articles", () => {
       .then(({ body }) => {
         expect(body.msg).toEqual("Invalid Input");
       });
-  })
+  });
   test("status:400, Invalid property", () => {
     return request(app)
       .get(`/api/articles?sortProperty=banana`)
@@ -246,5 +247,27 @@ describe("/api/articles", () => {
       .then(({ body }) => {
         expect(body.msg).toEqual("Invalid Input");
       });
-  })
-})
+  });
+});
+describe.only("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("Status 200 and an array of comments for the given article_id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          body.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+});
