@@ -255,7 +255,7 @@ describe.only("/api/articles/:article_id/comments", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
-        .then(({ body }) => {
+        .then(({body}) => {
           body.forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({

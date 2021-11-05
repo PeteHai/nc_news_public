@@ -5,6 +5,7 @@ const {
   patchArticleVotes,
   fetchAllArticles,
   fetchArticleByTopic,
+  fetchCommentsForArticle,
 } = require("../models/model.js");
 
 exports.getAllTopics = (req, res, next) => {
@@ -41,7 +42,7 @@ exports.getAllArticles = (req, res, next) => {
   const { sortOrder, sortProperty, topic } = req.query;
 
   if (!!topic) {
-    fetchArticleByTopic(sortOrder, sortProperty,topic)
+    fetchArticleByTopic(sortOrder, sortProperty, topic)
       .then((articles) => {
         res.status(200).send({ articles });
       })
@@ -57,4 +58,15 @@ exports.getAllArticles = (req, res, next) => {
         next(err);
       });
   }
+};
+
+exports.getArticleComments = (req, res, next) => {
+  const { article_id } = req.params;
+  fetchCommentsForArticle(article_id)
+    .then((comments) => {
+      res.status(200).send(comments);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

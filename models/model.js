@@ -88,3 +88,14 @@ exports.fetchArticleByTopic = (
       return  rows.length > 0 ? rows : Promise.reject({ status: 404, msg: "Topic not found" });
     });
 };
+
+exports.fetchCommentsForArticle = (article_id) =>{
+  const queryStr = `
+  SELECT * FROM comments
+  WHERE article_id = $1`
+  return db
+  .query(queryStr,[article_id])
+  .then(({rows}) =>{
+    return rows
+  })
+}
