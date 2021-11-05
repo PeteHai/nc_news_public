@@ -44,7 +44,7 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
     });
 };
 
-exports.fetchAllArticles = (sortOrder = "ASC", sortProperty = "created_at") => {
+exports.fetchAllArticles = (sortOrder = "DESC", sortProperty = "created_at") => {
   //input validation
   const orderWhitelist = ["asc", "desc"];
   const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
@@ -70,7 +70,7 @@ exports.fetchAllArticles = (sortOrder = "ASC", sortProperty = "created_at") => {
 };
 
 exports.fetchArticleByTopic = (
-  sortOrder = "ASC",
+  sortOrder = `DESC`,
   sortProperty = "created_at",
   topic
 ) => {
@@ -84,7 +84,8 @@ exports.fetchArticleByTopic = (
 
   return db
     .query(queryStr, [topic])
-    .then(({ rows }) => {
+    .then(({rows}) => {
+      console.log(rows)
       return rows.length > 0
         ? rows
         : Promise.reject({ status: 404, msg: "Topic not found" });

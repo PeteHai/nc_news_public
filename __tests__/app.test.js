@@ -43,12 +43,12 @@ describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     test("status:200 and returns article data for relevant id", () => {
       return request(app)
-        .get("/api/articles/2")
+        .get("/api/articles/3")
         .expect(200)
         .then(({ body }) => {
           expect(body.article).toEqual(
             expect.objectContaining({
-              article_id: expect.any(Number),
+              article_id: 3,
               title: expect.any(String),
               body: expect.any(String),
               votes: expect.any(Number),
@@ -140,7 +140,7 @@ describe("/api/articles/:article_id", () => {
 
 describe("/api/articles", () => {
   describe("GET", () => {
-    test("status 200 and responds with an array of article objects with the relevant properties", () => {
+    test.only("status 200 and responds with an array of article objects with the relevant properties", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -166,7 +166,9 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("created_at", { ascending: false });
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
     test("status:200, articles sort order can be defined by user query e.g. older first", () => {
@@ -174,7 +176,9 @@ describe("/api/articles", () => {
         .get("/api/articles?sortOrder=desc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles).toBeSortedBy("created_at", { descending: true });
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
     test("status:200, user can define which property to sort by e.g. least votes", () => {
@@ -220,8 +224,7 @@ describe("/api/articles", () => {
         });
     });
   });
-  describe("sad path /api/articles", () => {
-  });
+  describe("sad path /api/articles", () => {});
   test("status:404, not a valid topic", () => {
     return request(app)
       .get(`/api/articles?topic=notAtopic`)
@@ -253,7 +256,7 @@ describe("/api/articles/:article_id/comments", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           body["comments"].forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
@@ -268,7 +271,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-  describe('Sad Path for /api/articles/:article_id/comments',()=>{
+  describe("Sad Path for /api/articles/:article_id/comments", () => {
     test("status:404, article_id is valid but does not exist", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
@@ -285,26 +288,27 @@ describe("/api/articles/:article_id/comments", () => {
           expect(body.msg).toEqual("Invalid query");
         });
     });
-
-  })
-  describe('POST /api/articles/:article_id/comments',()=>{
-    test('Status 201 and responds with the newly created comment',()=>{
-      const input ={
+  });
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("Status 201 and responds with the newly created comment", () => {
+      const input = {
         username: "bob",
-        body:"dogs are better than cats"
-      }
+        body: "dogs are better than cats",
+      };
       return request(app)
-      .post("/api/articles/1/comments")
-      .send(input)
-      .expect(201)
-      .then(({body})=>{
-        expect(body[0].toEqual({
-          comment_id: expect.any(Number),
-          ...input
-        }))
-      })
-    })
-  })
+        .post("/api/articles/1/comments")
+        .send(input)
+        .expect(201)
+        .then(({ body }) => {
+          expect(
+            body[0].toEqual({
+              comment_id: expect.any(Number),
+              ...input,
+            })
+          );
+        });
+    });
+  });
 });
 
 // describe('/api/comments/:comment_id',()=>{
