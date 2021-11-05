@@ -44,19 +44,15 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
     });
 };
 
-exports.fetchAllArticles = (
-  sortOrder = "ASC",
-  sortProperty = "created_at",
-  topic = ""
-) => {
+exports.fetchAllArticles = (sortOrder = "ASC", sortProperty = "created_at") => {
   //input validation
   const orderWhitelist = ["asc", "desc"];
   const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
 
-  if (!orderWhitelist.includes(sortOrder.toLowerCase())) {
+  if (!propertyWhitelist.includes(sortProperty.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Input" });
   }
-  if (!propertyWhitelist.includes(sortProperty.toLowerCase())) {
+  if (!orderWhitelist.includes(sortOrder.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Input" });
   }
 
@@ -78,19 +74,17 @@ exports.fetchArticleByTopic = (
   sortProperty = "created_at",
   topic
 ) => {
-  // console.log(sortProperty, sortOrder, topic);
   const queryStr = `SELECT articles.*, 
   COUNT(comment_id) AS comment_count 
   FROM articles 
   LEFT JOIN comments ON comments.article_id = articles.article_id 
-  WHERE articles.topic LIKE 'cats' 
+  WHERE articles.topic LIKE $1 
   GROUP BY articles.article_id 
-  ORDER BY created_at ASC;`;
+  ORDER BY ${sortProperty} ${sortOrder};`;
 
-  return db.query(queryStr)
-  .then(({ rows }) => {
-    return rows;
+  return db.query(queryStr, [topic]).then(({ rows }) => {
+    return rows.length > 0
+      ? rows
+      : Promise.reject({ status: 404, msg: "Topic not found" });
   });
 };
-
-// SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.topic LIKE 'cats' GROUP BY articles.article_id ORDER BY created_at ASC;

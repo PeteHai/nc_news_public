@@ -137,7 +137,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe.only("/api/articles", () => {
+describe("/api/articles", () => {
   describe("GET", () => {
     test("status 200 and responds with an array of article objects with the relevant properties", () => {
       return request(app)
@@ -217,4 +217,34 @@ describe.only("/api/articles", () => {
           });
         });
   });
-});
+  describe('sad path /api/articles',()=>{
+    //1 - invalid url
+    //2 - invalid psql query
+    //valid psql query but no topics of that title
+  })
+  test("status:404, not a valid topic", () => {
+    return request(app)
+      .get(`/api/articles?topic=notAtopic`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Topic not found");
+      });
+      
+  });
+  test("status:400,  Invalid sort order", () => {
+    return request(app)
+      .get(`/api/articles?sortOrder=banana`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid Input");
+      });
+  })
+  test("status:400, Invalid property", () => {
+    return request(app)
+      .get(`/api/articles?sortProperty=banana`)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid Input");
+      });
+  })
+})

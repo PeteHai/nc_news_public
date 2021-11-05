@@ -39,8 +39,9 @@ exports.patchArticle = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
   const { sortOrder, sortProperty, topic } = req.query;
+
   if (!!topic) {
-    fetchArticleByTopic(topic)
+    fetchArticleByTopic(sortOrder, sortProperty,topic)
       .then((articles) => {
         res.status(200).send({ articles });
       })
@@ -48,7 +49,7 @@ exports.getAllArticles = (req, res, next) => {
         next(err);
       });
   } else {
-    fetchAllArticles(sortOrder, sortProperty, topic)
+    fetchAllArticles(sortOrder, sortProperty)
       .then((articlesArray) => {
         res.status(200).send(articlesArray);
       })
