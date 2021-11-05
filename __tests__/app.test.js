@@ -124,7 +124,7 @@ describe("/api/articles/:article_id", () => {
             expect(body.msg).toEqual("Invalid query");
           });
       });
-      test("status:400, SQL query is invalid", () => {
+      test("status:400, query is invalid", () => {
         return request(app)
           .patch(`/api/articles/1`)
           .send({ inc_votes: "bad_request" })
@@ -249,7 +249,7 @@ describe("/api/articles", () => {
       });
   });
 });
-describe.only("/api/articles/:article_id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("Status 200 and an array of comments for the given article_id", () => {
       return request(app)
@@ -270,4 +270,23 @@ describe.only("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe('Sad Path for /api/articles/:article_id/comments',()=>{
+    test("status:404, article_id is valid but does not exist", () => {
+      return request(app)
+        .get(`/api/articles/9999/comments`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Article not found");
+        });
+    });
+    test("status:400, article_id is invalid", () => {
+      return request(app)
+        .get(`/api/articles/bad_id/comments`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid query");
+        });
+    });
+
+  })
 });

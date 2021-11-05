@@ -78,24 +78,27 @@ exports.fetchArticleByTopic = (
   COUNT(comment_id) AS comment_count 
   FROM articles 
   LEFT JOIN comments ON comments.article_id = articles.article_id 
-  WHERE articles.topic LIKE '$1' 
+  WHERE articles.topic LIKE $1 
   GROUP BY articles.article_id 
   ORDER BY ${sortProperty} ${sortOrder};`;
 
   return db
-    .query(queryStr, [topic, sortProperty, sortOrder])
+    .query(queryStr, [topic])
     .then(({ rows }) => {
-      return  rows.length > 0 ? rows : Promise.reject({ status: 404, msg: "Topic not found" });
+      return rows.length > 0
+        ? rows
+        : Promise.reject({ status: 404, msg: "Topic not found" });
     });
 };
 
-exports.fetchCommentsForArticle = (article_id) =>{
+exports.fetchCommentsForArticle = (article_id) => {
   const queryStr = `
   SELECT * FROM comments
-  WHERE article_id = $1`
-  return db
-  .query(queryStr,[article_id])
-  .then(({rows}) =>{
-    return rows
-  })
-}
+  WHERE article_id = $1`;
+  return db.query(queryStr, [article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Article not found" });
+    }
+    return rows;
+  });
+};
