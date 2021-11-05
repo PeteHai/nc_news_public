@@ -46,7 +46,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/2")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual(
+          expect(body.article).toEqual(
             expect.objectContaining({
               article_id: expect.any(Number),
               title: expect.any(String),
@@ -94,7 +94,7 @@ describe("/api/articles/:article_id", () => {
           .send({ inc_votes: newVote })
           .expect(200)
           .then(({ body }) => {
-            expect(body.patchedArticle).toEqual({
+            expect(body.article).toEqual({
               article_id: 1,
               title: "Living in the shadow of a great man",
               body: "I find this existence challenging",
@@ -145,7 +145,7 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          body.forEach((article) => {
+          body["articles"].forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
                 article_id: expect.any(Number),
@@ -166,7 +166,7 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("created_at", { ascending: false });
+          expect(body.articles).toBeSortedBy("created_at", { ascending: false });
         });
     });
     test("status:200, articles sort order can be defined by user query e.g. older first", () => {
@@ -174,7 +174,7 @@ describe("/api/articles", () => {
         .get("/api/articles?sortOrder=desc")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("created_at", { descending: true });
+          expect(body.articles).toBeSortedBy("created_at", { descending: true });
         });
     });
     test("status:200, user can define which property to sort by e.g. least votes", () => {
@@ -182,7 +182,7 @@ describe("/api/articles", () => {
         .get("/api/articles?sortProperty=votes")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("votes", {
+          expect(body.articles).toBeSortedBy("votes", {
             ascending: true,
           });
         });
@@ -192,7 +192,7 @@ describe("/api/articles", () => {
         .get("/api/articles?sortProperty=author")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("author", {
+          expect(body.articles).toBeSortedBy("author", {
             ascending: true,
           });
         });
@@ -202,7 +202,7 @@ describe("/api/articles", () => {
         .get("/api/articles?sortProperty=votes&sortOrder=desc")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toBeSortedBy("votes", {
+          expect(body.articles).toBeSortedBy("votes", {
             descending: true,
           });
         });
@@ -221,9 +221,6 @@ describe("/api/articles", () => {
     });
   });
   describe("sad path /api/articles", () => {
-    //1 - invalid url
-    //2 - invalid psql query
-    //valid psql query but no topics of that title
   });
   test("status:404, not a valid topic", () => {
     return request(app)
@@ -257,7 +254,7 @@ describe("/api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({body}) => {
-          body.forEach((comment) => {
+          body["comments"].forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
                 comment_id: expect.any(Number),
@@ -290,7 +287,7 @@ describe("/api/articles/:article_id/comments", () => {
     });
 
   })
-  describe.only('POST /api/articles/:article_id/comments',()=>{
+  describe('POST /api/articles/:article_id/comments',()=>{
     test('Status 201 and responds with the newly created comment',()=>{
       const input ={
         username: "bob",
