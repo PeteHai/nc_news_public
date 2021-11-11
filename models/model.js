@@ -65,6 +65,7 @@ exports.fetchAllArticles = (sortOrder = "DESC", sortProperty = "created_at") => 
     ORDER BY ${sortProperty} ${sortOrder};`;
 
   return db.query(queryStr).then(({ rows }) => {
+    // console.log(rows)
     return rows;
   });
 };
@@ -85,7 +86,6 @@ exports.fetchArticleByTopic = (
   return db
     .query(queryStr, [topic])
     .then(({rows}) => {
-      console.log(rows)
       return rows.length > 0
         ? rows
         : Promise.reject({ status: 404, msg: "Topic not found" });
