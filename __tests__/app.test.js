@@ -290,10 +290,10 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-  describe("POST /api/articles/:article_id/comments", () => {
+  describe.only("POST /api/articles/:article_id/comments", () => {
     test("Status 201 and responds with the newly created comment", () => {
       const input = {
-        username: "bob",
+        author: "butter_bridge",
         body: "dogs are better than cats",
       };
       return request(app)
@@ -301,12 +301,20 @@ describe("/api/articles/:article_id/comments", () => {
         .send(input)
         .expect(201)
         .then(({ body }) => {
+          // console.log(body.comment[0]);
+          const updatedComment = body.comment[0];
+          console.log(updatedComment)
           expect(
-            body[0].toEqual({
+            updatedComment).toEqual({
               comment_id: expect.any(Number),
-              ...input,
+              author: 'butter_bridge',
+              article_id: 1,
+              votes: 0,
+              created_at: expect.any(String),
+              body: 'dogs are better than cats'
+
             })
-          );
+          
         });
     });
   });

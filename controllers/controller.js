@@ -22,7 +22,7 @@ exports.getAllTopics = (req, res, next) => {
 exports.getArticleID = (req, res, next) => {
   selectArticleID(req.params.article_id)
     .then((article) => {
-      res.status(200).send({article});
+      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
@@ -53,7 +53,7 @@ exports.getAllArticles = (req, res, next) => {
   } else {
     fetchAllArticles(sortOrder, sortProperty)
       .then((articles) => {
-        res.status(200).send({articles});
+        res.status(200).send({ articles });
       })
       .catch((err) => {
         next(err);
@@ -65,20 +65,20 @@ exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
   fetchCommentsForArticle(article_id)
     .then((comments) => {
-      res.status(200).send({comments});
+      res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
     });
 };
 
-exports.postCommentOnArticle = (req,res,next) =>{
-  const {article_id} = req.params
-  const commentBody = req.body
-  const commentUsername = req.username
+exports.postCommentOnArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const commentBody = req.body.body;
+  const commentUsername = req.body.author;
   insertComment(article_id, commentBody, commentUsername)
-  .then((comment)=>{
-    res.status(201).send({comment});
-  })
-  .catch(next)
-}
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch(next);
+};
