@@ -87,9 +87,7 @@ exports.fetchArticleByTopic = (
   ORDER BY ${sortProperty} ${sortOrder};`;
 
   return db.query(queryStr, [topic]).then(({ rows }) => {
-    return rows.length > 0
-      ? rows
-      : Promise.reject({ status: 404, msg: "Topic not found" });
+    return rows;
   });
 };
 
@@ -106,20 +104,14 @@ exports.fetchCommentsForArticle = (article_id) => {
 };
 
 exports.insertComment = (article_id, commentBody, commentUsername) => {
-  // console.log([commentBody, 0, commentUsername, article_id]);
-  //this insert violates foreign key constraint "comments_author_fkey"
-  // const queryAddUser = `INSERT INTO users(username, name, avatar_url)
-  // VALUES($1,"bob bobby","https://madeUpUrl.com");`;
   const queryStr = `
   INSERT INTO comments(author, article_id, votes, created_at, body)
   VALUES($1,$2,$3,CURRENT_TIMESTAMP,$4) RETURNING *;`;
 
-  //create user ?? insert into before comments insert
-
   return db
     .query(queryStr, [commentUsername, article_id, 0, commentBody])
-    .then(({rows}) => {
-      console.log(rows)
+    .then(({ rows }) => {
+      console.log(rows);
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
       }
