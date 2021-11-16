@@ -65,7 +65,6 @@ exports.fetchAllArticles = (order = "DESC", sort_by = "created_at") => {
     ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryStr).then(({ rows }) => {
-    // console.log(rows)
     return rows;
   });
 };
@@ -98,6 +97,7 @@ exports.fetchCommentsForArticle = (article_id) => {
 };
 
 exports.insertComment = (article_id, commentBody, commentUsername) => {
+  console.log(commentBody, commentUsername);
   const queryStr = `
   INSERT INTO comments(author, article_id, votes, created_at, body)
   VALUES($1,$2,$3,CURRENT_TIMESTAMP,$4) RETURNING *;`;
@@ -107,8 +107,14 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
     .catch((error) => {
       if (error.code === "23503") {
         return Promise.reject({ status: 404, msg: error.detail });
+      } else if (error.code === "23502") {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad request - keys missing from POST request",
+        });
       }
     })
+
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
@@ -116,11 +122,6 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
         return Promise.reject({
           status: 400,
           msg: "Bad request - body cannot be empty",
-        });
-      } else if (commentBody === undefined || commentUsername === undefined) {
-        return Promise.reject({
-          status: 400,
-          msg: "Bad request - keys missing from POST request",
         });
       }
       return rows[0];

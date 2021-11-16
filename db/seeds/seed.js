@@ -38,9 +38,9 @@ const seed = (data) => {
       title TEXT NOT NULL,
       body TEXT NOT NULL,
       votes INT NOT NULL  DEFAULT 0,
-      topic TEXT,
+      topic TEXT NOT NULL,
       FOREIGN KEY (topic) REFERENCES topics(slug),
-      author TEXT,
+      author TEXT NOT NULL,
       FOREIGN KEY(author) REFERENCES users(username),
       created_at TIMESTAMP
       DEFAULT CURRENT_TIMESTAMP );`);
@@ -49,7 +49,7 @@ const seed = (data) => {
         return db.query(`
       CREATE TABLE comments (
         comment_id SERIAL PRIMARY KEY,
-        author TEXT,
+        author TEXT NOT NULL,
         FOREIGN KEY(author) REFERENCES users(username),
         article_id INT,
         FOREIGN KEY(article_id) REFERENCES articles(article_id),
@@ -128,4 +128,4 @@ const seed = (data) => {
   );
 };
 
-module.exports = {seed};
+module.exports = { seed };
