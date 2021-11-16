@@ -57,7 +57,7 @@ exports.fetchAllArticles = (order = "DESC", sort_by = "created_at") => {
   }
 
   //query construction
-  const queryStr = `SELECT articles.*, COUNT(comment_id) AS comment_count
+  const queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
@@ -74,7 +74,7 @@ exports.fetchArticleByTopic = (
   sort_by = "created_at",
   topic
 ) => {
-  const queryStr = `SELECT articles.*, 
+  const queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, 
   COUNT(comment_id) AS comment_count 
   FROM articles 
   LEFT JOIN comments ON comments.article_id = articles.article_id 
@@ -97,7 +97,6 @@ exports.fetchCommentsForArticle = (article_id) => {
 };
 
 exports.insertComment = (article_id, commentBody, commentUsername) => {
-  console.log(commentBody, commentUsername);
   const queryStr = `
   INSERT INTO comments(author, article_id, votes, created_at, body)
   VALUES($1,$2,$3,CURRENT_TIMESTAMP,$4) RETURNING *;`;
@@ -105,12 +104,18 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
   return db
     .query(queryStr, [commentUsername, article_id, 0, commentBody])
     .catch((error) => {
+      console.log(error);
       if (error.code === "23503") {
         return Promise.reject({ status: 404, msg: error.detail });
       } else if (error.code === "23502") {
         return Promise.reject({
           status: 400,
           msg: "Bad request - keys missing from POST request",
+        });
+      } else if (error.code === "22P02") {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad request - invalid ID type",
         });
       }
     })
