@@ -44,10 +44,7 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
     });
 };
 
-exports.fetchAllArticles = (
-  order = "DESC",
-  sort_by = "created_at"
-) => {
+exports.fetchAllArticles = (order = "DESC", sort_by = "created_at") => {
   //input validation
   const orderWhitelist = ["asc", "desc"];
   const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
@@ -96,9 +93,6 @@ exports.fetchCommentsForArticle = (article_id) => {
   SELECT * FROM comments
   WHERE article_id = $1`;
   return db.query(queryStr, [article_id]).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Article not found" });
-    }
     return rows;
   });
 };
@@ -110,11 +104,25 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
 
   return db
     .query(queryStr, [commentUsername, article_id, 0, commentBody])
+    .catch((error) => {
+      if (error.code === "23503") {
+        return Promise.reject({ status: 404, msg: error.detail });
+      }
+    })
     .then(({ rows }) => {
-      console.log(rows);
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" });
+      } else if (rows[0].body.length === 0) {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad request - body cannot be empty",
+        });
+      } else if (commentBody === undefined || commentUsername === undefined) {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad request - keys missing from POST request",
+        });
       }
-      return rows;
+      return rows[0];
     });
 };

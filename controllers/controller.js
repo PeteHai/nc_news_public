@@ -40,8 +40,7 @@ exports.patchArticle = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { order, sort_by, topic} = req.query;
-console.log(req.query, "+++ query +++")
+  const { order, sort_by, topic } = req.query;
   if (!!topic) {
     fetchArticleByTopic(order, sort_by, topic)
       .then((articles) => {

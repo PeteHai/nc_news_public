@@ -47,7 +47,6 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(({ body }) => {
-          console.log(body.article);
           expect(body.article).toEqual(
             expect.objectContaining({
               article_id: 1,
@@ -243,7 +242,6 @@ describe("/api/articles", () => {
       .get(`/api/articles?topic=notAtopic`)
       .expect(200)
       .then(({ body }) => {
-        console.log(body, "bodddyy");
         expect(body["articles"]).toEqual([]);
       });
   });
@@ -286,14 +284,25 @@ describe("/api/articles/:article_id/comments", () => {
     });
   });
   describe("Sad Path for /api/articles/:article_id/comments", () => {
-    test("status:404, article_id is valid but does not exist", () => {
+    test("status 200 and an empty array when article exists but has no comments", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
-        .expect(404)
+        .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toEqual("Article not found");
+          expect(body["comments"]).toEqual([]);
         });
     });
+
+    //deleted because the above handles better
+
+    // test("status:404, article_id is valid but does not exist", () => {
+    //   return request(app)
+    //     .get(`/api/articles/9999/comments`)
+    //     .expect(404)
+    //     .then(({ body }) => {
+    //       expect(body.msg).toEqual("Article not found");
+    //     });
+    // });
     test("status:400, article_id is invalid", () => {
       return request(app)
         .get(`/api/articles/bad_id/comments`)
@@ -303,8 +312,11 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-  describe("POST /api/articles/:article_id/comments", () => {
-    test("Status 201 and responds with the newly created comment", () => {
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  describe("POST comment happy path", () => {
+    test("Status 201 and responds with the newly created comment in an array", () => {
       const input = {
         author: "butter_bridge",
         body: "dogs are better than cats",
@@ -314,16 +326,60 @@ describe("/api/articles/:article_id/comments", () => {
         .send(input)
         .expect(201)
         .then(({ body }) => {
-          const updatedComment = body.comment[0];
-          console.log(updatedComment);
-          expect(updatedComment).toEqual({
-            comment_id: expect.any(Number),
-            author: "butter_bridge",
-            article_id: 1,
-            votes: 0,
-            created_at: expect.any(String),
-            body: "dogs are better than cats",
+          expect(body).toEqual({
+            comment: {
+              comment_id: expect.any(Number),
+              author: "butter_bridge",
+              article_id: 1,
+              votes: 0,
+              created_at: expect.any(String),
+              body: "dogs are better than cats",
+            },
           });
+        });
+    });
+  });
+  describe("POST comment SAD path", () => {
+    test("status 400 and bad request message when comment body is empty", () => {
+      const input = {
+        author: "butter_bridge",
+        body: "",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Bad request - body cannot be empty");
+        });
+    });
+    test("status 404, article not found when trying to post a comment on an valid article that does not exist", () => {
+      const input = {
+        author: "butter_bridge",
+        body: "testing for a valid article_id that doesnot exist",
+      };
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send(input)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual(
+            'Key (article_id)=(999) is not present in table "articles".'
+          );
+        });
+    });
+    test("status 400 and bad request message when post does not include all the required keys", () => {
+      const input = {
+        body: "testing for a post that does not include all keys",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(input)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual(
+            "Bad request - keys missing from POST request"
+          );
         });
     });
   });
