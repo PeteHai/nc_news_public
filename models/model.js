@@ -45,17 +45,17 @@ exports.patchArticleVotes = ({ inc_votes }, article_id) => {
 };
 
 exports.fetchAllArticles = (
-  sortOrder = "DESC",
-  sortProperty = "created_at"
+  order = "DESC",
+  sort_by = "created_at"
 ) => {
   //input validation
   const orderWhitelist = ["asc", "desc"];
   const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
 
-  if (!propertyWhitelist.includes(sortProperty.toLowerCase())) {
+  if (!propertyWhitelist.includes(sort_by.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Input" });
   }
-  if (!orderWhitelist.includes(sortOrder.toLowerCase())) {
+  if (!orderWhitelist.includes(order.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Input" });
   }
 
@@ -65,7 +65,7 @@ exports.fetchAllArticles = (
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
-    ORDER BY ${sortProperty} ${sortOrder};`;
+    ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryStr).then(({ rows }) => {
     // console.log(rows)
@@ -74,8 +74,8 @@ exports.fetchAllArticles = (
 };
 
 exports.fetchArticleByTopic = (
-  sortOrder = `DESC`,
-  sortProperty = "created_at",
+  order = `DESC`,
+  sort_by = "created_at",
   topic
 ) => {
   const queryStr = `SELECT articles.*, 
@@ -84,7 +84,7 @@ exports.fetchArticleByTopic = (
   LEFT JOIN comments ON comments.article_id = articles.article_id 
   WHERE articles.topic LIKE $1 
   GROUP BY articles.article_id 
-  ORDER BY ${sortProperty} ${sortOrder};`;
+  ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryStr, [topic]).then(({ rows }) => {
     return rows;

@@ -47,17 +47,17 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
+          console.log(body.article);
           expect(body.article).toEqual(
             expect.objectContaining({
               article_id: 1,
-              title: expect.any(String),
-              body: expect.any(String),
-              votes: expect.any(Number),
-              topic: expect.any(String),
-              author: expect.any(String),
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
               created_at: expect.any(String),
-              comment_count: expect.any(11),
+              comment_count: "11",
             })
           );
         });
@@ -175,7 +175,7 @@ describe("/api/articles", () => {
     });
     test("status:200, articles sort order can be defined by user query e.g. older first", () => {
       return request(app)
-        .get("/api/articles?sortOrder=desc")
+        .get("/api/articles?order=desc")
         .expect(200)
         .then(({ body }) => {
           expect(body["articles"]).toBeSortedBy("created_at", {
@@ -185,7 +185,7 @@ describe("/api/articles", () => {
     });
     test("status:200, user can define which property to sort by e.g. least votes", () => {
       return request(app)
-        .get("/api/articles?sortProperty=votes")
+        .get("/api/articles?sort_by=votes")
         .expect(200)
         .then(({ body }) => {
           expect(body.articles[0]).toBeSortedBy("votes", {
@@ -195,7 +195,7 @@ describe("/api/articles", () => {
     });
     test("status:200, user can define which property to sort by e.g. author A-Z ACS", () => {
       return request(app)
-        .get("/api/articles?sortProperty=author")
+        .get("/api/articles?sort_by=author")
         .expect(200)
         .then(({ body }) => {
           expect(body.articles[0]).toBeSortedBy("author", {
@@ -205,7 +205,7 @@ describe("/api/articles", () => {
     });
     test("status:200, user can define property and order to sort e.g. most votes first (votes DESC", () => {
       return request(app)
-        .get("/api/articles?sortProperty=votes&sortOrder=desc")
+        .get("/api/articles?sort_by=votes&sortOrder=desc")
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("votes", {
@@ -225,18 +225,17 @@ describe("/api/articles", () => {
           expect(intended).toEqual(true);
         });
     });
-    test.only("Status:200 users can sort_by any column e.g. author", () => {
-      //still working on this one - need to buid sort_by into controller and model and check that below test is correct
-      return request(app)
-        .get("/api/articles?sort_by=author")
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          const firstArticle = articles[0];
-        })
-        .expect(firstArticle.author)
-        .toBe("rogersop");
-    });
+    // test.only("Status:200 users can sort_by any column e.g. author", () => {
+    //   //still working on this one - need to buid sort_by into controller and model and check that below test is correct
+    //   return request(app)
+    //     .get("/api/articles?sort_by=author")
+    //     .expect(200)
+    //     .then(({ body }) => {
+    //       const { articles } = body;
+    //       const firstArticle = articles[0];
+    //       expect(firstArticle.author).toBe("rogersop");
+    //     })
+    // });
   });
   describe("sad path /api/articles", () => {});
   test("status:200 and empty array, not a valid topic", () => {
@@ -250,7 +249,7 @@ describe("/api/articles", () => {
   });
   test("status:400,  Invalid sort order", () => {
     return request(app)
-      .get(`/api/articles?sortOrder=banana`)
+      .get(`/api/articles?order=banana`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Invalid Input");
@@ -258,7 +257,7 @@ describe("/api/articles", () => {
   });
   test("status:400, Invalid property", () => {
     return request(app)
-      .get(`/api/articles?sortProperty=banana`)
+      .get(`/api/articles?sort_by=banana`)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Invalid Input");
