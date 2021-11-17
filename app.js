@@ -11,6 +11,7 @@ const {
   getArticleComments,
   postCommentOnArticle,
   deleteComment,
+  getApi,
 } = require("./controllers/controller.js");
 
 //error handling controllers
@@ -29,6 +30,7 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 app.post("/api/articles/:article_id/comments", postCommentOnArticle);
 app.delete("/api/comments/:comment_id", deleteComment);
+app.get("/api", getApi);
 
 //requests not allowed 405 handling
 app.delete(() => {

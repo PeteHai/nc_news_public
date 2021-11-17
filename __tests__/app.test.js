@@ -5,6 +5,8 @@ const request = require("supertest");
 const app = require("../app.js");
 const { post } = require("../app.js");
 const articles = require("../db/data/test-data/articles.js");
+const endpointsJson = require("../endpoints.json");
+
 process.env.NODE_ENV = "test";
 
 beforeEach(() => seed(testData));
@@ -434,7 +436,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   describe("DELETE", () => {
     test("status 204 and no content", () => {
       return request(app).delete("/api/comments/3").expect(204);
@@ -447,6 +449,24 @@ describe("/api/comments/:comment_id", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid query");
+        });
+    });
+  });
+});
+
+describe("GET /api", () => {
+  describe("GET /api Happy Path", () => {
+    test("status 200 and JSON object", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body);
+          expect(body).toEqual(
+            expect.objectContaining({
+              endpointsJson,
+            })
+          );
         });
     });
   });

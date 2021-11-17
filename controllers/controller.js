@@ -1,4 +1,5 @@
 const topics = require("../db/data/test-data/topics.js");
+const endpointsJson = require("../endpoints.json");
 const {
   selectTopics,
   selectArticleID,
@@ -86,8 +87,13 @@ exports.postCommentOnArticle = (req, res, next) => {
 exports.deleteComment = (req, res, next) => {
   removeComment(req.params.comment_id)
     .then((rows) => {
-      console.log(rows)
+      console.log(rows);
       res.status(204).send(rows);
     })
     .catch(next);
+};
+
+exports.getApi = (req, res, next) => {
+  const response = { endpointsJson }
+  res.status(200).send(response);
 };
