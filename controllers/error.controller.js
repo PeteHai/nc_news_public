@@ -16,3 +16,6 @@ exports.handle500Errors = (err, req, res, next) => {
   res.status(500).send({ msg: "Internal server error" });
 };
 
+// exports.handleDeleteErrorId = (err, req, res, next) => {
+//   res.status(400).send({ msg: "invalid comment id" });
+// };

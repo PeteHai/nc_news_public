@@ -27,7 +27,7 @@ exports.selectArticleID = (article_id) => {
     });
 };
 
-exports.patchArticleVotes = ({ inc_votes = 0}, article_id) => {
+exports.patchArticleVotes = ({ inc_votes = 0 }, article_id) => {
   return db
     .query(
       `UPDATE articles
@@ -92,6 +92,12 @@ exports.fetchCommentsForArticle = (article_id) => {
   SELECT * FROM comments
   WHERE article_id = $1`;
   return db.query(queryStr, [article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "Article not found",
+      });
+    }
     return rows;
   });
 };
@@ -129,6 +135,15 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
           msg: "Bad request - body cannot be empty",
         });
       }
+      return rows[0];
+    });
+};
+
+
+exports.removeComment = (id) => {
+  return db
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [id])
+    .then(({ rows }) => {
       return rows[0];
     });
 };

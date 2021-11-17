@@ -136,7 +136,7 @@ describe("/api/articles/:article_id", () => {
             expect(body.msg).toEqual("Invalid query");
           });
       });
-      test.only("status 200 valid patch request with no information in body - sends unchanged article", () => {
+      test("status 200 valid patch request with no information in body - sends unchanged article", () => {
         return request(app)
           .patch(`/api/articles/1`)
           .send({})
@@ -296,9 +296,9 @@ describe("/api/articles/:article_id/comments", () => {
     test("status 200 and an empty array when article exists but has no comments", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
-        .expect(200)
+        .expect(404)
         .then(({ body }) => {
-          expect(body["comments"]).toEqual([]);
+          expect(body.msg).toEqual("Article not found");
         });
     });
     test("status:400, article_id is invalid", () => {
@@ -434,8 +434,20 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-// describe('/api/comments/:comment_id',()=>{
-//   describe('DELETE',()=>{
-//     test('')
-//   })
-// })
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    test("status 204 and no content", () => {
+      return request(app).delete("/api/comments/3").expect(204);
+    });
+  });
+  describe("DELETE sad path", () => {
+    test("status:400 and invalid commentId message", () => {
+      return request(app)
+        .delete(`/api/comments/badId`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid query");
+        });
+    });
+  });
+});
