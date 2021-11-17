@@ -30,7 +30,7 @@ exports.getArticleID = (req, res, next) => {
 };
 
 exports.patchArticle = (req, res, next) => {
-  patchArticleVotes(req.body, req.params.article_id) //{ inc_votes: 10 }
+  patchArticleVotes(req.body, req.params.article_id)
     .then((article) => {
       res.status(200).send({ article });
     })

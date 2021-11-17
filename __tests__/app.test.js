@@ -136,6 +136,23 @@ describe("/api/articles/:article_id", () => {
             expect(body.msg).toEqual("Invalid query");
           });
       });
+      test.only("status 200 valid patch request with no information in body - sends unchanged article", () => {
+        return request(app)
+          .patch(`/api/articles/1`)
+          .send({})
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).toEqual({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: expect.any(String),
+            });
+          });
+      });
     });
   });
 });
@@ -232,7 +249,7 @@ describe("/api/articles", () => {
       .get(`/api/articles?topic=notAtopic`)
       .expect(200)
       .then(({ body }) => {
-        console.log(body)
+        console.log(body);
         expect(body["articles"]).toEqual([]);
       });
   });
@@ -395,8 +412,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       const input = {
         author: "butter_bridge",
         body: "please ignore this next property",
-        votes: 2000
-
+        votes: 2000,
       };
       return request(app)
         .post("/api/articles/1/comments")

@@ -27,7 +27,7 @@ exports.selectArticleID = (article_id) => {
     });
 };
 
-exports.patchArticleVotes = ({ inc_votes }, article_id) => {
+exports.patchArticleVotes = ({ inc_votes = 0}, article_id) => {
   return db
     .query(
       `UPDATE articles
