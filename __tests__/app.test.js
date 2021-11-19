@@ -245,30 +245,31 @@ describe("/api/articles", () => {
         });
     });
   });
-  describe("sad path /api/articles", () => {});
-  test.only("status:404 topic not found", () => {
-    return request(app)
-      .get(`/api/articles?topic=notAtopic`)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid Topic");
-      });
-  });
-  test("status:400,  Invalid sort order", () => {
-    return request(app)
-      .get(`/api/articles?order=banana`)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid Input");
-      });
-  });
-  test("status:400, Invalid property", () => {
-    return request(app)
-      .get(`/api/articles?sort_by=banana`)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid Input");
-      });
+  describe("sad path /api/articles", () => {
+    test("status:404 topic not found", () => {
+      return request(app)
+        .get(`/api/articles?topic=notAtopic`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Topic not found");
+        });
+    });
+    test("status:400,  Invalid sort order", () => {
+      return request(app)
+        .get(`/api/articles?order=banana`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Input");
+        });
+    });
+    test("status:400, Invalid property", () => {
+      return request(app)
+        .get(`/api/articles?sort_by=banana`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Input");
+        });
+    });
   });
 });
 describe("/api/articles/:article_id/comments", () => {
@@ -302,7 +303,7 @@ describe("/api/articles/:article_id/comments", () => {
     });
   });
   describe("Sad Path for /api/articles/:article_id/comments", () => {
-    test.only("status 200 and an empty array when article_id does not exist", () => {
+    test("status 404 and an article Id not found msg", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
         .expect(404)

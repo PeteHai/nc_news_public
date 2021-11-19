@@ -87,7 +87,6 @@ exports.postCommentOnArticle = (req, res, next) => {
 exports.deleteComment = (req, res, next) => {
   removeComment(req.params.comment_id)
     .then((rows) => {
-      console.log(rows);
       res.status(204).send(rows);
     })
     .catch(next);

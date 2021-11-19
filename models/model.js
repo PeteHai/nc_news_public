@@ -1,5 +1,5 @@
 const db = require("../db/connection.js");
-const { articlesIdCheck } = require("./utils.js");
+const { articlesIdCheck, checkTopicExists} = require("./utils.js");
 
 exports.selectTopics = () => {
   const queryStr = `SELECT * FROM topics;`;
@@ -70,7 +70,7 @@ exports.fetchAllArticles = (order = "DESC", sort_by = "created_at") => {
   });
 };
 
-exports.fetchArticleByTopic = (
+exports.fetchArticleByTopic = async (
   order = `DESC`,
   sort_by = "created_at",
   topic
@@ -83,21 +83,26 @@ exports.fetchArticleByTopic = (
   GROUP BY articles.article_id 
   ORDER BY ${sort_by} ${order};`;
 
-  return db.query(queryStr, [topic]).then(({ rows }) => {
-    if (rows === 0) return rows;
-  });
+  // return db.query(queryStr, [topic]).then(({ rows }) => {
+  //   return rows;
+  // });
+  const results = await db.query(queryStr, [topic]);
+  if (results.rows.length === 0) {
+    await checkTopicExists(topic);
+  }
+  return results.rows;
 };
 
-exports.fetchCommentsForArticle = (article_id) => {
+exports.fetchCommentsForArticle = async (article_id) => {
   const queryStr = `
   SELECT * FROM comments
   WHERE article_id = $1;`;
-  return db.query(queryStr, [article_id]).then(({ rows }) => {
-    if (rows.length === 0) {
-      articlesIdCheck(article_id);
-    }
-    return rows;
-  });
+
+  const results = await db.query(queryStr, [article_id]);
+  if (results.rows.length === 0) {
+    await articlesIdCheck(article_id);
+  }
+  return results.rows;
 };
 
 exports.insertComment = (article_id, commentBody, commentUsername) => {
