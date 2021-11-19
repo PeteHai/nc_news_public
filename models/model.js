@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const { articlesIdCheck } = require("./utils.js");
 
 exports.selectTopics = () => {
   const queryStr = `SELECT * FROM topics;`;
@@ -83,20 +84,17 @@ exports.fetchArticleByTopic = (
   ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryStr, [topic]).then(({ rows }) => {
-    return rows;
+    if (rows === 0) return rows;
   });
 };
 
 exports.fetchCommentsForArticle = (article_id) => {
   const queryStr = `
   SELECT * FROM comments
-  WHERE article_id = $1`;
+  WHERE article_id = $1;`;
   return db.query(queryStr, [article_id]).then(({ rows }) => {
     if (rows.length === 0) {
-      return Promise.reject({
-        status: 404,
-        msg: "Article not found",
-      });
+      articlesIdCheck(article_id);
     }
     return rows;
   });
@@ -110,7 +108,6 @@ exports.insertComment = (article_id, commentBody, commentUsername) => {
   return db
     .query(queryStr, [commentUsername, article_id, 0, commentBody])
     .catch((error) => {
-      console.log(error);
       if (error.code === "23503") {
         return Promise.reject({ status: 404, msg: error.detail });
       } else if (error.code === "23502") {
@@ -146,4 +143,3 @@ exports.removeComment = (id) => {
       return rows[0];
     });
 };
-

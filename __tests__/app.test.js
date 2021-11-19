@@ -246,13 +246,12 @@ describe("/api/articles", () => {
     });
   });
   describe("sad path /api/articles", () => {});
-  test("status:200 and empty array, not a valid topic", () => {
+  test.only("status:404 topic not found", () => {
     return request(app)
       .get(`/api/articles?topic=notAtopic`)
-      .expect(200)
+      .expect(404)
       .then(({ body }) => {
-        console.log(body);
-        expect(body["articles"]).toEqual([]);
+        expect(body.msg).toEqual("Invalid Topic");
       });
   });
   test("status:400,  Invalid sort order", () => {
@@ -293,9 +292,17 @@ describe("/api/articles/:article_id/comments", () => {
           expect(body["comments"].length > 0).toBe(true);
         });
     });
+    test("Status 200 and empty array when article exists but has no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body["comments"]).toEqual([]);
+        });
+    });
   });
   describe("Sad Path for /api/articles/:article_id/comments", () => {
-    test("status 200 and an empty array when article exists but has no comments", () => {
+    test.only("status 200 and an empty array when article_id does not exist", () => {
       return request(app)
         .get(`/api/articles/9999/comments`)
         .expect(404)
@@ -451,6 +458,14 @@ describe("DELETE /api/comments/:comment_id", () => {
           expect(body.msg).toBe("Invalid query");
         });
     });
+    test("Status 404 - valid comment_id that does not exist", () => {
+      return request(app)
+        .delete("/api/articles/2/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid path");
+        });
+    });
   });
 });
 
@@ -461,7 +476,6 @@ describe("GET /api", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
           expect(body).toEqual(
             expect.objectContaining({
               endpointsJson,
