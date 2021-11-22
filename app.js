@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
+const cors = require("cors");
 
 //happy path controllers
 const {
@@ -42,8 +43,13 @@ app.all("*", (req, res) => {
   res.status(404).send({ msg: "Invalid path" });
 });
 
-app.use(handleCustomErrors);
-app.use(handlePsqlErrors);
-app.use(handle500Errors);
+//app.use(cors());
+app.use(cors(handleCustomErrors));
+app.use(cors(handlePsqlErrors));
+app.use(cors(handle500Errors));
+
+// app.use(handleCustomErrors);
+// app.use(handlePsqlErrors);
+// app.use(handle500Errors);
 
 module.exports = app;
