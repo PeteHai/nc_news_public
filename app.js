@@ -14,7 +14,6 @@ const {
   deleteComment,
   getApi,
 } = require("./controllers/controller.js");
-
 //error handling controllers
 const {
   handleDeleteError,
@@ -22,6 +21,8 @@ const {
   handlePsqlErrors,
   handle500Errors,
 } = require("./controllers/error.controller.js");
+
+app.use(cors());
 
 //endpoints - could put these into a router?
 app.get("/api/topics", getAllTopics);
@@ -44,6 +45,7 @@ app.all("*", (req, res) => {
 });
 
 app.use(cors());
+
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(handle500Errors);
