@@ -19,7 +19,7 @@ The dependencies (including dev dependencies) can be installed by running the fo
 
 A list of dependencies is al the bottom of this readme
 
-## dotenv files
+### dotenv files
 Two dotenv files aneed to be created - these will contain your psql password and therefore are included in the gitignore files for sensitivity.
 
 first file:
@@ -34,17 +34,22 @@ code:
 "PGDATABASE=nc_news_test
 PGPASSWORD= < type your psql password here>"
 
-## Seed the databases
+### Seed the databases
 The following command will seed he databases - ensure this is done during the initial setup so that the databases are created.
 "npm run seed"
 
-## run the tests
+### run the tests
 The tests are run using jest.  "npm test app.test.js" will run the full suite of tests.  You can target specific tests by typing ".only" directly into the code, after "describe" or "test".
 
 
 
 
-Dependencies:
+
+
+
+
+
+The dependencies required are:
 - jest
 - jest-sorted
 - pg-format
