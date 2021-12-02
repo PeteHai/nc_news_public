@@ -17,7 +17,15 @@ The dependencies (including dev dependencies) can be installed by running the fo
 "npm install"
 *Note that you must be in the cloned repo for the install to fully function
 
-A list of dependencies is al the bottom of this readme
+The dependencies that are to be install are:
+- jest
+- jest-sorted
+- pg-format
+- cors
+- dotenv
+- express
+- pg
+- supertest
 
 ### dotenv files
 Two dotenv files aneed to be created - these will contain your psql password and therefore are included in the gitignore files for sensitivity.
@@ -49,12 +57,4 @@ The tests are run using jest.  "npm test app.test.js" will run the full suite of
 
 
 
-The dependencies required are:
-- jest
-- jest-sorted
-- pg-format
-- cors
-- dotenv
-- express
-- pg
-- supertest
+
