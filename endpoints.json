@@ -88,7 +88,7 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "allows author to post a new comment under a specific article_id",
-    "variables":"article_id and author",
+    "variables": "article_id and author",
     "response": "will return the newly created comment in an array",
     "exampleResponse": {
       "article": [
@@ -101,6 +101,7 @@
           "body": "brand new comment"
         }
       ]
+    }
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment from the comments database, specified by comment_id",
