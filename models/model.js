@@ -1,5 +1,5 @@
 const db = require("../db/connection.js");
-const { articlesIdCheck, checkTopicExists} = require("./utils.js");
+const { articlesIdCheck, checkTopicExists } = require("./utils.js");
 
 exports.selectTopics = () => {
   const queryStr = `SELECT * FROM topics;`;
@@ -48,7 +48,14 @@ exports.patchArticleVotes = ({ inc_votes = 0 }, article_id) => {
 exports.fetchAllArticles = (order = "DESC", sort_by = "created_at") => {
   //input validation
   const orderWhitelist = ["asc", "desc"];
-  const propertyWhitelist = ["title", "votes", "topic", "author", "created_at"];
+  const propertyWhitelist = [
+    "title",
+    "votes",
+    "topic",
+    "author",
+    "created_at",
+    "comment_count",
+  ];
 
   if (!propertyWhitelist.includes(sort_by.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid Input" });
